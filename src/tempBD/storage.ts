@@ -4,5 +4,10 @@ export const tempDB: DB = {
     users: [],
     artists: [],
     album: [],
-    track: []
+    track: [],
+    favorites: {
+        albums: [],
+        artists: [],
+        tracks: []
+    }
 }

@@ -30,7 +30,9 @@ export class ArtistService {
     async deleteArtist(id: string) {
         this.checkId(id);
         const indexArtist = tempDB.artists.findIndex((artist) => artist.id === id);
-        tempDB.users.splice(indexArtist, 1);
+        tempDB.artists.splice(indexArtist, 1);
+        tempDB.album.map((album) => album.artistId === id ? album.artistId = null : '');
+        tempDB.track.map((track) => track.artistId === id ? track.artistId = null : '');
     }
 
     async updateArtist(id: string, updateArtistDto: UpdateArtistDto) {

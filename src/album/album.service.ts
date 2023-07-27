@@ -30,6 +30,7 @@ export class AlbumService {
         this.checkId(id);
         const indexAlbum = tempDB.album.findIndex((album) => album.id === id);
         tempDB.album.splice(indexAlbum, 1);
+        tempDB.track.map((track) => track.albumId === id ? track.albumId = null : '');
     }
 
     async updateAlbum(id: string, updateAlbumtDto: UpdateAlbumtDto) {

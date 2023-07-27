@@ -3,6 +3,7 @@ export interface DB {
   artists: Artist[];
   album: Album[];
   track: Track[];
+  favorites: Favorites
 }
 
 export interface UserAnswer {
@@ -36,4 +37,12 @@ export interface Track {
   artistId: string | null;
   albumId: string | null;
   duration: number;
+}
+
+export type typeFavorites = 'artist' | 'album' | 'track';
+
+export interface Favorites {
+  artists: Artist[];
+  albums: Album[];
+  tracks: Track[];
 }
