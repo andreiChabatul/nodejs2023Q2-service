@@ -8,7 +8,6 @@ import { UpdateAlbumtDto } from './dto/update-album.dto';
 @Injectable()
 export class AlbumService {
 
-
     async getAllAlbum(): Promise<Album[]> {
         return tempDB.album;
     }

@@ -1,7 +1,8 @@
 export interface DB {
   users: User[];
   artists: Artist[];
-  album: Album[]
+  album: Album[];
+  track: Track[];
 }
 
 export interface UserAnswer {
@@ -27,4 +28,12 @@ export interface Album {
   name: string;
   year: number;
   artistId: string | null;
+}
+
+export interface Track {
+  id: string;
+  name: string;
+  artistId: string | null;
+  albumId: string | null;
+  duration: number;
 }
