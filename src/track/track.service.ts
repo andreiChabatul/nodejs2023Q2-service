@@ -9,12 +9,12 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 export class TrackService {
 
     async getAllTrack(): Promise<Track[]> {
-        return tempDB.track;
+        return tempDB.tracks;
     }
 
     async getOneTrack(id: string): Promise<Track> {
         this.checkId(id);
-        return tempDB.track.find(track => track.id === id);
+        return tempDB.tracks.find(track => track.id === id);
     }
 
     async createTrack(createTrackDto: CreateTrackDto) {
@@ -22,19 +22,19 @@ export class TrackService {
             ...createTrackDto,
             id: uuidv4(),
         }
-        tempDB.track.push(newTrack);
+        tempDB.tracks.push(newTrack);
         return newTrack;
     }
 
     async deleteTrack(id: string) {
         this.checkId(id);
-        const indexTrack = tempDB.track.findIndex((track) => track.id === id);
-        tempDB.track.splice(indexTrack, 1);
+        const indexTrack = tempDB.tracks.findIndex((track) => track.id === id);
+        tempDB.tracks.splice(indexTrack, 1);
     }
 
     async updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
         this.checkId(id);
-        const track = tempDB.track.find(track => track.id === id);
+        const track = tempDB.tracks.find(track => track.id === id);
         track.albumId = updateTrackDto.albumId;
         track.artistId = updateTrackDto.artistId;
         track.duration = updateTrackDto.duration;
@@ -44,7 +44,7 @@ export class TrackService {
 
     private checkId(id: string): void {
         let isTrack = true;
-        tempDB.track.map((track) => track.id === id ? isTrack = false : '');
+        tempDB.tracks.map((track) => track.id === id ? isTrack = false : '');
         if (isTrack) throw new HttpException('Track id does not exist', HttpStatus.NOT_FOUND);
     }
 

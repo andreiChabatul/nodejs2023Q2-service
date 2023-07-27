@@ -9,12 +9,12 @@ import { UpdateAlbumtDto } from './dto/update-album.dto';
 export class AlbumService {
 
     async getAllAlbum(): Promise<Album[]> {
-        return tempDB.album;
+        return tempDB.albums;
     }
 
     async getOneAlbum(id: string): Promise<Album> {
         this.checkId(id);
-        return tempDB.album.find(album => album.id === id);
+        return tempDB.albums.find(album => album.id === id);
     }
 
     async createAlbum(createAlbumtDto: CreateAlbumtDto) {
@@ -22,20 +22,20 @@ export class AlbumService {
             ...createAlbumtDto,
             id: uuidv4(),
         }
-        tempDB.album.push(newAlbum);
+        tempDB.albums.push(newAlbum);
         return newAlbum;
     }
 
     async deleteAlbum(id: string) {
         this.checkId(id);
-        const indexAlbum = tempDB.album.findIndex((album) => album.id === id);
-        tempDB.album.splice(indexAlbum, 1);
-        tempDB.track.map((track) => track.albumId === id ? track.albumId = null : '');
+        const indexAlbum = tempDB.albums.findIndex((album) => album.id === id);
+        tempDB.albums.splice(indexAlbum, 1);
+        tempDB.tracks.map((track) => track.albumId === id ? track.albumId = null : '');
     }
 
     async updateAlbum(id: string, updateAlbumtDto: UpdateAlbumtDto) {
         this.checkId(id);
-        const album = tempDB.album.find(album => album.id === id);
+        const album = tempDB.albums.find(album => album.id === id);
         album.name = updateAlbumtDto.name;
         album.year = updateAlbumtDto.year;
         album.artistId = updateAlbumtDto.artistId;
@@ -44,7 +44,7 @@ export class AlbumService {
 
     private checkId(id: string): void {
         let isAlbum = true;
-        tempDB.album.map((album) => album.id === id ? isAlbum = false : '');
+        tempDB.albums.map((album) => album.id === id ? isAlbum = false : '');
         if (isAlbum) throw new HttpException('Album id does not exist', HttpStatus.NOT_FOUND);
     }
 

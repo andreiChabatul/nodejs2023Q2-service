@@ -3,8 +3,8 @@ import { DB } from "src/types";
 export const tempDB: DB = {
     users: [],
     artists: [],
-    album: [],
-    track: [],
+    albums: [],
+    tracks: [],
     favorites: {
         albums: [],
         artists: [],

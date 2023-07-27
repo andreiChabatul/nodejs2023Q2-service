@@ -1,8 +1,8 @@
 export interface DB {
   users: User[];
   artists: Artist[];
-  album: Album[];
-  track: Track[];
+  albums: Album[];
+  tracks: Track[];
   favorites: Favorites
 }
 
@@ -39,7 +39,7 @@ export interface Track {
   duration: number;
 }
 
-export type typeFavorites = 'artist' | 'album' | 'track';
+export type typeFavorites = 'artists' | 'albums' | 'tracks';
 
 export interface Favorites {
   artists: Artist[];

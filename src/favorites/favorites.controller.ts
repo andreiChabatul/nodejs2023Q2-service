@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, ParseUUIDPipe, Delete } from '@nestjs/common';
+import { Controller, Post, Get, Param, ParseUUIDPipe, Delete, HttpStatus, HttpCode } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favs')
@@ -13,17 +13,35 @@ export class FavoritesController {
 
     @Post('track/:id')
     async addFavoritesTrack(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'track');
+        return await this.favoritesService.addFavorites(id, 'tracks');
     }
 
     @Post('album/:id')
     async addFavoritesAlbum(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'album');
+        return await this.favoritesService.addFavorites(id, 'albums');
     }
 
     @Post('artist/:id')
     async addFavoritesArtist(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'artist');
+        return await this.favoritesService.addFavorites(id, 'artists');
+    }
+
+    @Delete('track/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteFavoritesTrack(@Param('id', ParseUUIDPipe) id: string) {
+        return await this.favoritesService.deleteFavorites(id, 'tracks');
+    }
+
+    @Delete('album/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteFavoritesAlbum(@Param('id', ParseUUIDPipe) id: string) {
+        return await this.favoritesService.deleteFavorites(id, 'albums');
+    }
+
+    @Delete('artist/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteFavoritesArtist(@Param('id', ParseUUIDPipe) id: string) {
+        return await this.favoritesService.deleteFavorites(id, 'artists');
     }
 
 
