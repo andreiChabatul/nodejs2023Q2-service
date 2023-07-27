@@ -19,18 +19,18 @@ export class ArtistController {
     }
 
     @Post()
-    async createUser(@Body() createArtistDto: CreateArtistDto) {
+    async createArtist(@Body() createArtistDto: CreateArtistDto) {
         return this.artistServise.createArtist(createArtistDto);
     }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+    async deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
         return await this.artistServise.deleteArtist(id);
     }
 
     @Put(':id')
-    async updatePasword(
+    async updateArtist(
         @Param('id', ParseUUIDPipe) id: string,
         @Body() updateArtistDto: UpdateArtistDto
     ) {
