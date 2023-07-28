@@ -4,6 +4,7 @@ import { tempDB } from 'src/tempBD/storage';
 import { Track } from 'src/types';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { deleteFavorite } from 'src/utils/deleteFavorite';
 
 @Injectable()
 export class TrackService {
@@ -30,6 +31,7 @@ export class TrackService {
         this.checkId(id);
         const indexTrack = tempDB.tracks.findIndex((track) => track.id === id);
         tempDB.tracks.splice(indexTrack, 1);
+        deleteFavorite(id, 'tracks');
     }
 
     async updateTrack(id: string, updateTrackDto: UpdateTrackDto) {

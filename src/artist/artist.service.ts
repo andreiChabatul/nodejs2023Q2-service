@@ -4,6 +4,7 @@ import { tempDB } from 'src/tempBD/storage';
 import { Artist } from 'src/types';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { deleteFavorite } from 'src/utils/deleteFavorite';
 
 @Injectable()
 export class ArtistService {
@@ -33,6 +34,7 @@ export class ArtistService {
         tempDB.artists.splice(indexArtist, 1);
         tempDB.albums.map((album) => album.artistId === id ? album.artistId = null : '');
         tempDB.tracks.map((track) => track.artistId === id ? track.artistId = null : '');
+        deleteFavorite(id, 'artists');
     }
 
     async updateArtist(id: string, updateArtistDto: UpdateArtistDto) {
