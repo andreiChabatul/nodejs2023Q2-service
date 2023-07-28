@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,28 +10,32 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UserEntity } from './user.entity';
 
 @Controller('user')
 export class UserController {
-  constructor(private userServise: UserService) {}
+  constructor(private userServise: UserService) { }
 
   @Get()
   async getAll() {
     return this.userServise.getAllUsers();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getOne(@Param('id', ParseUUIDPipe) id: string) {
-    return await this.userServise.getOneUser(id);
+    return new UserEntity(await this.userServise.getOneUser(id));
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userServise.createUser(createUserDto);
+    return new UserEntity(await this.userServise.createUser(createUserDto));
   }
 
   @Delete(':id')
@@ -39,11 +44,12 @@ export class UserController {
     return await this.userServise.deleteUser(id);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
   async updatePasword(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return await this.userServise.updatePassword(id, updatePasswordDto);
+    return new UserEntity(await this.userServise.updatePassword(id, updatePasswordDto));
   }
 }

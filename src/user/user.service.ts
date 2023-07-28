@@ -17,9 +17,7 @@ export class UserService {
   async getOneUser(id: string): Promise<UserAnswer> {
     checkId(id, 'users');
     const user = tempDB.users.find((user) => user.id === id);
-    const answerUser = { ...user };
-    delete answerUser.password;
-    return answerUser;
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserAnswer> {
@@ -31,9 +29,7 @@ export class UserService {
       updatedAt: Date.now(),
     };
     tempDB.users.push(newUser);
-    const answerUser = { ...newUser };
-    delete answerUser.password;
-    return answerUser;
+    return newUser;
   }
 
   async updatePassword(
@@ -49,9 +45,7 @@ export class UserService {
     } else {
       throw new HttpException('Old Password is wrong', HttpStatus.FORBIDDEN);
     }
-    const answerUser = { ...user };
-    delete answerUser.password;
-    return answerUser;
+    return user;
   }
 
   async deleteUser(id: string): Promise<void> {
