@@ -1,7 +1,6 @@
-import { IsNotEmpty, IsBoolean } from "class-validator";
+import { IsNotEmpty, IsBoolean } from 'class-validator';
 
 export class CreateArtistDto {
-
   @IsNotEmpty()
   readonly name: string;
 

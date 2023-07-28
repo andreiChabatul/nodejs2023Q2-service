@@ -1,13 +1,13 @@
-import { DB } from "src/types";
+import { DB } from 'src/types';
 
 export const tempDB: DB = {
-    users: [],
-    artists: [],
+  users: [],
+  artists: [],
+  albums: [],
+  tracks: [],
+  favorites: {
     albums: [],
+    artists: [],
     tracks: [],
-    favorites: {
-        albums: [],
-        artists: [],
-        tracks: []
-    }
-}
+  },
+};

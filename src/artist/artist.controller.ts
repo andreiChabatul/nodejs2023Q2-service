@@ -1,39 +1,49 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 
 @Controller('artist')
 export class ArtistController {
+  constructor(private artistServise: ArtistService) {}
 
-    constructor(private artistServise: ArtistService) { }
+  @Get()
+  async getAll() {
+    return this.artistServise.getAllArtist();
+  }
 
-    @Get()
-    async getAll() {
-        return this.artistServise.getAllArtist();
-    }
+  @Get(':id')
+  async getOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.artistServise.getOneArtist(id);
+  }
 
-    @Get(':id')
-    async getOne(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.artistServise.getOneArtist(id);
-    }
+  @Post()
+  async createArtist(@Body() createArtistDto: CreateArtistDto) {
+    return this.artistServise.createArtist(createArtistDto);
+  }
 
-    @Post()
-    async createArtist(@Body() createArtistDto: CreateArtistDto) {
-        return this.artistServise.createArtist(createArtistDto);
-    }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.artistServise.deleteArtist(id);
+  }
 
-    @Delete(':id')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteArtist(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.artistServise.deleteArtist(id);
-    }
-
-    @Put(':id')
-    async updateArtist(
-        @Param('id', ParseUUIDPipe) id: string,
-        @Body() updateArtistDto: UpdateArtistDto
-    ) {
-        return await this.artistServise.updateArtist(id, updateArtistDto)
-    }
+  @Put(':id')
+  async updateArtist(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateArtistDto: UpdateArtistDto,
+  ) {
+    return await this.artistServise.updateArtist(id, updateArtistDto);
+  }
 }
