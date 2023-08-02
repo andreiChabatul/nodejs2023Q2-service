@@ -5,11 +5,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserAnswer } from 'src/types';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { checkId } from 'src/utils/checkId';
+import { PrismaClient } from '@prisma/client';
 
+
+export const prisma = new PrismaClient()
 @Injectable()
 export class UserService {
   async getAllUsers(): Promise<UserAnswer[]> {
-    const DPPassword = [...tempDB.users];
+    const DPPassword = await prisma.user.findMany()
     DPPassword.map((user) => delete user.password);
     return DPPassword;
   }
