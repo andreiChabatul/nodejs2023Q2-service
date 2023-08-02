@@ -1,15 +1,19 @@
-import { IsNotEmpty, IsNumber, IsString, Equals, IsIn, IsOptional } from "class-validator";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateAlbumtDto {
+  @IsNotEmpty()
+  readonly name: string;
 
-    @IsNotEmpty()
-    readonly name: string;
+  @IsNotEmpty()
+  @IsNumber()
+  readonly year: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    readonly year: number;
-
-    @IsString()
-    @IsOptional()
-    readonly artistId: string | null;
+  @IsString()
+  @IsOptional()
+  readonly artistId: string | null;
 }

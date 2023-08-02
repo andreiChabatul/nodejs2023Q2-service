@@ -1,9 +1,12 @@
+export type typeFavorites = 'artists' | 'albums' | 'tracks';
+export type typeField = typeFavorites | 'users';
+
 export interface DB {
   users: User[];
   artists: Artist[];
-  album: Album[];
-  track: Track[];
-  favorites: Favorites
+  albums: Album[];
+  tracks: Track[];
+  favorites: Favorites;
 }
 
 export interface UserAnswer {
@@ -38,8 +41,6 @@ export interface Track {
   albumId: string | null;
   duration: number;
 }
-
-export type typeFavorites = 'artist' | 'album' | 'track';
 
 export interface Favorites {
   artists: Artist[];
