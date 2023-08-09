@@ -10,3 +10,8 @@ export const checkId = (id: string, type: typeField): void => {
   if (isUser)
     throw new HttpException(`${type} id does not exist`, HttpStatus.NOT_FOUND);
 };
+
+
+export const ErrorNoFound = (type: typeField) => {
+  throw new HttpException(`${type} id does not exist`, HttpStatus.NOT_FOUND);
+}
