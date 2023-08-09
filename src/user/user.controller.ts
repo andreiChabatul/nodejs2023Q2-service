@@ -21,9 +21,11 @@ import { UserEntity } from './user.entity';
 export class UserController {
   constructor(private userServise: UserService) { }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async getAll() {
-    return this.userServise.getAllUsers();
+    const users = await this.userServise.getAllUsers();
+    return users.map(user => new UserEntity(user));
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
