@@ -14,9 +14,33 @@ datasource db {
 
 model User {
   id String @id @default(uuid())
-  login String @unique
+  login String
   version Int @default(1)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @default(now()) 
   password String
+}
+
+model Artist {
+  id String @id @default(uuid())
+  name String
+  grammy Boolean
+  favorites Boolean @default(false)
+}
+
+model Album {
+  id String @id @default(uuid())
+  name String
+  year Int
+  artistId String?
+  favorites Boolean @default(false)
+}
+
+model Track {
+  id String @id @default(uuid())
+  name String
+  artistId String?
+  albumId String?
+  duration Int
+  favorites Boolean @default(false)
 }

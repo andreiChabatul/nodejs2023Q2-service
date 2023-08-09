@@ -1,24 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { tempDB } from 'src/tempBD/storage';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAnswer } from 'src/types';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { ErrorNoFound, checkId } from 'src/utils/checkId';
+import { ErrorNoFound } from 'src/utils/errorHandling';
 import { prisma } from 'src/main';
-import { version } from 'os';
 
 @Injectable()
 export class UserService {
   async getAllUsers(): Promise<UserAnswer[]> {
     const DPPassword = await prisma.user.findMany()
-    // DPPassword.map((user) => delete user.password);
+    DPPassword.map((user) => delete user.password);
     return DPPassword;
   }
 
   async getOneUser(id: string): Promise<UserAnswer> {
     const user = await prisma.user.findUniqueOrThrow({
       where: { id }
-    }).catch(err => ErrorNoFound('users'));
+    }).catch(() => ErrorNoFound('users'));
     return user;
   }
 
@@ -35,8 +33,6 @@ export class UserService {
     id: string,
     updatePaswordDto: UpdatePasswordDto,
   ): Promise<UserAnswer> {
-    checkId(id, 'users');
-
     const user = await this.getOneUser(id);
 
     if (user.password === updatePaswordDto.oldPassword) {
@@ -59,6 +55,6 @@ export class UserService {
   async deleteUser(id: string): Promise<void> {
     await prisma.user.delete({
       where: { id }
-    }).catch(err => ErrorNoFound('users'));
+    }).catch(() => ErrorNoFound('users'));
   }
 }

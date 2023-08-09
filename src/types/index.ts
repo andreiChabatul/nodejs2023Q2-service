@@ -1,28 +1,16 @@
-export type typeFavorites = 'artists' | 'albums' | 'tracks';
-export type typeField = typeFavorites | 'users';
-
-export interface DB {
-  users: User[];
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
-  favorites: Favorites;
-}
+export type typeField = 'artists' | 'albums' | 'tracks' | 'users';
+export type actionsFavorites = 'delete' | 'add';
 
 export interface UserCreate {
   login: string;
   version: number; // integer number, increments on update
   createdAt: Date; // timestamp of creation
   updatedAt: Date; // timestamp of last update
-  password: string; // uuid v4
+  password: string;
 }
 
 export interface UserAnswer extends UserCreate {
   id: string;
-}
-
-export interface User extends UserAnswer {
-  
 }
 
 export interface Artist {

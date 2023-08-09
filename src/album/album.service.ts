@@ -1,51 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { tempDB } from 'src/tempBD/storage';
 import { Album } from 'src/types';
 import { CreateAlbumtDto } from './dto/create-album.dto';
 import { UpdateAlbumtDto } from './dto/update-album.dto';
-import { deleteFavorite } from 'src/utils/deleteFavorite';
-import { checkId } from 'src/utils/checkId';
+import { ErrorNoFound } from 'src/utils/errorHandling';
+import { prisma } from 'src/main';
 
 @Injectable()
 export class AlbumService {
   async getAllAlbum(): Promise<Album[]> {
-    return tempDB.albums;
+    return prisma.album.findMany();
   }
 
   async getOneAlbum(id: string): Promise<Album> {
-    checkId(id, 'albums');
-    return tempDB.albums.find((album) => album.id === id);
+    const album = await prisma.album.findUniqueOrThrow({
+      where: { id }
+    }).catch(() => ErrorNoFound('albums'));
+    return album;
   }
 
   async createAlbum(createAlbumtDto: CreateAlbumtDto): Promise<Album> {
-    const newAlbum: Album = {
-      ...createAlbumtDto,
-      id: uuidv4(),
-    };
-    tempDB.albums.push(newAlbum);
+    const newAlbum = await prisma.album.create({
+      data: {
+        ...createAlbumtDto
+      },
+    })
     return newAlbum;
   }
 
   async deleteAlbum(id: string): Promise<void> {
-    checkId(id, 'albums');
-    const indexAlbum = tempDB.albums.findIndex((album) => album.id === id);
-    tempDB.albums.splice(indexAlbum, 1);
-    tempDB.tracks.map((track) =>
-      track.albumId === id ? (track.albumId = null) : '',
-    );
-    deleteFavorite(id, 'albums');
+    await prisma.album.delete({
+      where: { id }
+    }).catch(() => ErrorNoFound('albums'));
+    await prisma.track.updateMany(
+      {
+        where: { albumId: id },
+        data: { albumId: null }
+      }
+    )
   }
 
   async updateAlbum(
     id: string,
     updateAlbumtDto: UpdateAlbumtDto,
   ): Promise<Album> {
-    checkId(id, 'albums');
-    const album = tempDB.albums.find((album) => album.id === id);
-    Object.keys(album).map((key) =>
-      key !== 'id' ? (album[key] = updateAlbumtDto[key]) : '',
-    );
-    return album;
+    const updateAlbum = await prisma.album.update({
+      where: { id },
+      data: updateAlbumtDto
+    }).catch(() => ErrorNoFound('albums'));
+
+    return updateAlbum;
   }
 }

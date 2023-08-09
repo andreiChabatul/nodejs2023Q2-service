@@ -1,55 +1,53 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { tempDB } from 'src/tempBD/storage';
-import { Album, Artist, Favorites, Track, typeFavorites } from 'src/types';
+import { Injectable } from '@nestjs/common';
+import { prisma } from 'src/main';
+import { Favorites, actionsFavorites } from 'src/types';
+import { ErrorNoFavorities } from 'src/utils/errorHandling';
 
 @Injectable()
 export class FavoritesService {
+
+
   async getAllFavorites(): Promise<Favorites> {
-    return tempDB.favorites;
+
+    const favoritesAlbum = await prisma.album.findMany({
+      where: { favorites: true }
+    })
+    const favoritesArtist = await prisma.artist.findMany({
+      where: { favorites: true }
+    })
+    const favoritesTrack = await prisma.track.findMany({
+      where: { favorites: true }
+    })
+
+    favoritesAlbum.map((album) => delete album.favorites);
+    favoritesArtist.map((artist) => delete artist.favorites);
+    favoritesTrack.map((track) => delete track.favorites);
+
+    return {
+      albums: favoritesAlbum,
+      tracks: favoritesTrack,
+      artists: favoritesArtist,
+    };
   }
 
-  async addFavorites(id: string, type: typeFavorites): Promise<void> {
-    const addIndex = tempDB[type]?.findIndex(
-      (item: Album | Artist | Track) => item.id === id,
-    );
-
-    if (addIndex > -1) {
-      switch (type) {
-        case 'albums':
-          const itemAlbums = tempDB[type][addIndex];
-          tempDB.favorites[type].push(itemAlbums);
-          break;
-        case 'artists':
-          const itemArtists = tempDB[type][addIndex];
-          tempDB.favorites[type].push(itemArtists);
-          break;
-        case 'tracks':
-          const itemTracks = tempDB[type][addIndex];
-          tempDB.favorites[type].push(itemTracks);
-          break;
-        default:
-          break;
-      }
-      return;
-    }
-    this.ErrorId(type);
+  async updateAlbumFavorites(id: string, action: actionsFavorites) {
+    await prisma.album.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('albums'));
   }
 
-  async deleteFavorites(id: string, type: typeFavorites): Promise<void> {
-    const deleteFavorite = tempDB.favorites[type]?.findIndex(
-      (item: Album | Artist | Track) => item.id === id,
-    );
-    if (deleteFavorite > -1) {
-      tempDB.favorites[type].splice(deleteFavorite, 1);
-      return;
-    }
-    this.ErrorId(type);
+  async updatArtistFavorites(id: string, action: actionsFavorites) {
+    await prisma.artist.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('artists'));
   }
 
-  private ErrorId(type: string): void {
-    throw new HttpException(
-      `${type} id does not exist`,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+  async updateTrackFavorites(id: string, action: actionsFavorites) {
+    await prisma.track.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('tracks'));
   }
 }

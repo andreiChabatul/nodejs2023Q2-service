@@ -1,54 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { tempDB } from 'src/tempBD/storage';
 import { Artist } from 'src/types';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { deleteFavorite } from 'src/utils/deleteFavorite';
-import { checkId } from 'src/utils/checkId';
+import { ErrorNoFound, } from 'src/utils/errorHandling';
+import { prisma } from 'src/main';
 
 @Injectable()
 export class ArtistService {
   async getAllArtist(): Promise<Artist[]> {
-    return tempDB.artists;
+    return prisma.artist.findMany();
   }
 
   async getOneArtist(id: string): Promise<Artist> {
-    checkId(id, 'artists');
-    return tempDB.artists.find((user) => user.id === id);
+    const artist = await prisma.artist.findUniqueOrThrow({
+      where: { id }
+    }).catch(() => ErrorNoFound('artists'));
+    return artist;
   }
 
   async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
-    const newArtist: Artist = {
-      ...createArtistDto,
-      id: uuidv4(),
-    };
-    tempDB.artists.push(newArtist);
+    const newArtist = await prisma.artist.create({
+      data: {
+        ...createArtistDto
+      },
+    })
     return newArtist;
   }
 
   async deleteArtist(id: string): Promise<void> {
-    checkId(id, 'artists');
-    const indexArtist = tempDB.artists.findIndex((artist) => artist.id === id);
-    tempDB.artists.splice(indexArtist, 1);
-    tempDB.albums.map((album) =>
-      album.artistId === id ? (album.artistId = null) : '',
-    );
-    tempDB.tracks.map((track) =>
-      track.artistId === id ? (track.artistId = null) : '',
-    );
-    deleteFavorite(id, 'artists');
+    await prisma.artist.delete({
+      where: { id }
+    }).catch(() => ErrorNoFound('artists'));
+    await prisma.album.updateMany(
+      {
+        where: { artistId: id },
+        data: { artistId: null }
+      }
+    )
+    await prisma.track.updateMany(
+      {
+        where: { artistId: id },
+        data: { artistId: null }
+      }
+    )
   }
 
   async updateArtist(
     id: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
-    checkId(id, 'artists');
-    const artist = tempDB.artists.find((user) => user.id === id);
-    Object.keys(artist).map((key) =>
-      key !== 'id' ? (artist[key] = updateArtistDto[key]) : '',
-    );
-    return artist;
+    const updateArtist = await prisma.artist.update({
+      where: { id },
+      data: updateArtistDto
+    }).catch(() => ErrorNoFound('artists'));
+
+    return updateArtist;
   }
 }
