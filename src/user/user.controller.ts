@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserEntity } from './user.entity';
+import { TransformDate } from './user.interceptor';
 
 @Controller('user')
 export class UserController {
@@ -28,13 +29,13 @@ export class UserController {
     return users.map(user => new UserEntity(user));
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor, TransformDate)
   @Get(':id')
   async getOne(@Param('id', ParseUUIDPipe) id: string) {
     return new UserEntity(await this.userServise.getOneUser(id));
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(TransformDate, ClassSerializerInterceptor)
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return new UserEntity(await this.userServise.createUser(createUserDto));
@@ -46,7 +47,7 @@ export class UserController {
     return await this.userServise.deleteUser(id);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(TransformDate, ClassSerializerInterceptor )
   @Put(':id')
   async updatePasword(
     @Param('id', ParseUUIDPipe) id: string,

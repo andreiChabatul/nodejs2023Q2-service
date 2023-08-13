@@ -1,11 +1,11 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 
 export class UserEntity {
   id: string;
   login: string;
   version: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | number;
+  updatedAt: Date | number;
 
   @Exclude()
   password: string;

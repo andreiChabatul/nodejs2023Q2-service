@@ -4,8 +4,8 @@ export type actionsFavorites = 'delete' | 'add';
 export interface UserCreate {
   login: string;
   version: number; // integer number, increments on update
-  createdAt: Date; // timestamp of creation
-  updatedAt: Date; // timestamp of last update
+  createdAt: Date ; // timestamp of creation
+  updatedAt: Date ; // timestamp of last update
   password: string;
 }
 

@@ -8,9 +8,8 @@ import { prisma } from 'src/main';
 @Injectable()
 export class UserService {
   async getAllUsers(): Promise<UserAnswer[]> {
-    const DPPassword = await prisma.user.findMany()
-    DPPassword.map((user) => delete user.password);
-    return DPPassword;
+    const users = await prisma.user.findMany();
+    return users;
   }
 
   async getOneUser(id: string): Promise<UserAnswer> {
