@@ -2,6 +2,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:10.3
+    container_name: DB-container
     restart: always
     environment:
       - POSTGRES_USER=sammy
@@ -9,6 +10,27 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '5434:5432'
+    networks:
+      - somenetwork
+
+  server:
+    build: .
+    restart: always
+    depends_on:
+      - postgres
+    container_name: server-container
+    expose:
+      - '4000'
+    ports:
+      - '4000:4000'
+    networks:
+      - somenetwork
+
 volumes:
   postgres:
+
+
+networks:
+  somenetwork:
+    driver: bridge

@@ -9,10 +9,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { OpenAPIObject } from '@nestjs/swagger/dist/interfaces/index';
 
-
-
 export const prisma = new PrismaClient()
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,31 +21,5 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
 }
-
-
-
-
-// async function main() {
-//   const user = await prisma.user.create({
-//     data: {
-//       login: '123215434',
-//       password: '4324234',
-//       createdAt: Date.now(),
-//       updatedAt: Date.now()
-//     },
-//   })
-//   return user
-// }
-
-// async function Test() {
-//   try {
-//     console.log(await main())
-//   } catch (error) {
-//     console.log(error)
-//   }
- 
-// }
-
-// Test()
 
 bootstrap();
