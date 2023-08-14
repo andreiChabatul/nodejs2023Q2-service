@@ -1,30 +1,54 @@
-import { Controller, Post, Get, Param, ParseUUIDPipe, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Delete,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favs')
 export class FavoritesController {
+  constructor(private favoritesService: FavoritesService) { }
 
-    constructor(private favoritesService: FavoritesService) { }
+  @Get()
+  async getAllTrack() {
+    return await this.favoritesService.getAllFavorites();
+  }
 
-    @Get()
-    async getAllTrack() {
-        return await this.favoritesService.getAllFavorites();
-    }
+  @Post('track/:id')
+  async addFavoritesTrack(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updateTrackFavorites(id, 'add');
+  }
 
-    @Post('track/:id')
-    async addFavoritesTrack(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'track');
-    }
+  @Post('album/:id')
+  async addFavoritesAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updateAlbumFavorites(id, 'add');
+  }
 
-    @Post('album/:id')
-    async addFavoritesAlbum(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'album');
-    }
+  @Post('artist/:id')
+  async addFavoritesArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updatArtistFavorites(id, 'add');
+  }
 
-    @Post('artist/:id')
-    async addFavoritesArtist(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.favoritesService.AddFavorites(id, 'artist');
-    }
+  @Delete('track/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteFavoritesTrack(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updateTrackFavorites(id, 'delete');
+  }
 
+  @Delete('album/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteFavoritesAlbum(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updateAlbumFavorites(id, 'delete');
+  }
 
+  @Delete('artist/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteFavoritesArtist(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.favoritesService.updatArtistFavorites(id, 'delete');
+  }
 }

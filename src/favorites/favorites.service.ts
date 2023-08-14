@@ -1,57 +1,53 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { tempDB } from 'src/tempBD/storage';
-import { Album, Artist, Track, typeFavorites } from 'src/types';
-
+import { Injectable } from '@nestjs/common';
+import { prisma } from 'src/main';
+import { Favorites, actionsFavorites } from 'src/types';
+import { ErrorNoFavorities } from 'src/utils/errorHandling';
 
 @Injectable()
 export class FavoritesService {
 
-    async getAllFavorites() {
-        return tempDB.favorites;
-    }
 
-    // async AddFavoriteTrack(id: string) {
-    //     const track = tempDB.track.find(track => track.id === id);
-    //     if (track) {
-    //         tempDB.favorites.tracks.push(track);
-    //         return track;
-    //     }
-    //     this.ErrorId('Track')
-    // }
+  async getAllFavorites(): Promise<Favorites> {
 
-    // async AddFavoriteAlbum(id: string) {
-    //     const album = tempDB.album.find(album => album.id === id);
-    //     if (album) {
-    //         tempDB.favorites.albums.push(album);
-    //         return album;
-    //     }
-    //     this.ErrorId('Album')
-    // }
+    const favoritesAlbum = await prisma.album.findMany({
+      where: { favorites: true }
+    })
+    const favoritesArtist = await prisma.artist.findMany({
+      where: { favorites: true }
+    })
+    const favoritesTrack = await prisma.track.findMany({
+      where: { favorites: true }
+    })
 
-    // async AddFavoriteArtists(id: string) {
-    //     const artist = tempDB.artists.find(artist => artist.id === id);
-    //     if (artist) {
-    //         tempDB.favorites.artists.push(artist);
-    //         return artist;
-    //     }
-    //     this.ErrorId('Artist')
-    // }
+    favoritesAlbum.map((album) => delete album.favorites);
+    favoritesArtist.map((artist) => delete artist.favorites);
+    favoritesTrack.map((track) => delete track.favorites);
 
-    async AddFavorites<T, K extends keyof T>(id: string, type: K) {
-        const add = tempDB[type]?.find((item: Album | Artist | Track) => item.id === id);
-        if (add) {
-            console.log(add, tempDB[type]);
-            tempDB[type]?.push(add);
-            return add;
-        } else { throw new HttpException(`${type} id does not exist`, HttpStatus.UNPROCESSABLE_ENTITY); }
-    }
+    return {
+      albums: favoritesAlbum,
+      tracks: favoritesTrack,
+      artists: favoritesArtist,
+    };
+  }
 
-    async DeleteFavoriteTrack(id: string) {
+  async updateAlbumFavorites(id: string, action: actionsFavorites) {
+    await prisma.album.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('albums'));
+  }
 
-    }
+  async updatArtistFavorites(id: string, action: actionsFavorites) {
+    await prisma.artist.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('artists'));
+  }
 
-    private ErrorId(type: string) {
-
-    }
-
+  async updateTrackFavorites(id: string, action: actionsFavorites) {
+    await prisma.track.update({
+      where: { id },
+      data: { favorites: action === 'add' ? true : false }
+    }).catch(() => ErrorNoFavorities('tracks'));
+  }
 }

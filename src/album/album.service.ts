@@ -1,51 +1,53 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { tempDB } from 'src/tempBD/storage';
+import { Injectable } from '@nestjs/common';
 import { Album } from 'src/types';
 import { CreateAlbumtDto } from './dto/create-album.dto';
 import { UpdateAlbumtDto } from './dto/update-album.dto';
+import { ErrorNoFound } from 'src/utils/errorHandling';
+import { prisma } from 'src/main';
 
 @Injectable()
 export class AlbumService {
+  async getAllAlbum(): Promise<Album[]> {
+    return prisma.album.findMany();
+  }
 
-    async getAllAlbum(): Promise<Album[]> {
-        return tempDB.album;
-    }
+  async getOneAlbum(id: string): Promise<Album> {
+    const album = await prisma.album.findUniqueOrThrow({
+      where: { id }
+    }).catch(() => ErrorNoFound('albums'));
+    return album;
+  }
 
-    async getOneAlbum(id: string): Promise<Album> {
-        this.checkId(id);
-        return tempDB.album.find(album => album.id === id);
-    }
+  async createAlbum(createAlbumtDto: CreateAlbumtDto): Promise<Album> {
+    const newAlbum = await prisma.album.create({
+      data: {
+        ...createAlbumtDto
+      },
+    })
+    return newAlbum;
+  }
 
-    async createAlbum(createAlbumtDto: CreateAlbumtDto) {
-        const newAlbum: Album = {
-            ...createAlbumtDto,
-            id: uuidv4(),
-        }
-        tempDB.album.push(newAlbum);
-        return newAlbum;
-    }
+  async deleteAlbum(id: string): Promise<void> {
+    await prisma.album.delete({
+      where: { id }
+    }).catch(() => ErrorNoFound('albums'));
+    await prisma.track.updateMany(
+      {
+        where: { albumId: id },
+        data: { albumId: null }
+      }
+    )
+  }
 
-    async deleteAlbum(id: string) {
-        this.checkId(id);
-        const indexAlbum = tempDB.album.findIndex((album) => album.id === id);
-        tempDB.album.splice(indexAlbum, 1);
-        tempDB.track.map((track) => track.albumId === id ? track.albumId = null : '');
-    }
+  async updateAlbum(
+    id: string,
+    updateAlbumtDto: UpdateAlbumtDto,
+  ): Promise<Album> {
+    const updateAlbum = await prisma.album.update({
+      where: { id },
+      data: updateAlbumtDto
+    }).catch(() => ErrorNoFound('albums'));
 
-    async updateAlbum(id: string, updateAlbumtDto: UpdateAlbumtDto) {
-        this.checkId(id);
-        const album = tempDB.album.find(album => album.id === id);
-        album.name = updateAlbumtDto.name;
-        album.year = updateAlbumtDto.year;
-        album.artistId = updateAlbumtDto.artistId;
-        return album;
-    }
-
-    private checkId(id: string): void {
-        let isAlbum = true;
-        tempDB.album.map((album) => album.id === id ? isAlbum = false : '');
-        if (isAlbum) throw new HttpException('Album id does not exist', HttpStatus.NOT_FOUND);
-    }
-
+    return updateAlbum;
+  }
 }

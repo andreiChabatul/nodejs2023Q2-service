@@ -1,51 +1,59 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { tempDB } from 'src/tempBD/storage';
+import { Injectable } from '@nestjs/common';
 import { Artist } from 'src/types';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { ErrorNoFound, } from 'src/utils/errorHandling';
+import { prisma } from 'src/main';
 
 @Injectable()
 export class ArtistService {
+  async getAllArtist(): Promise<Artist[]> {
+    return prisma.artist.findMany();
+  }
 
+  async getOneArtist(id: string): Promise<Artist> {
+    const artist = await prisma.artist.findUniqueOrThrow({
+      where: { id }
+    }).catch(() => ErrorNoFound('artists'));
+    return artist;
+  }
 
-    async getAllArtist(): Promise<Artist[]> {
-        return tempDB.artists;
-    }
+  async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
+    const newArtist = await prisma.artist.create({
+      data: {
+        ...createArtistDto
+      },
+    })
+    return newArtist;
+  }
 
-    async getOneArtist(id: string): Promise<Artist> {
-        this.checkId(id);
-        return tempDB.artists.find(user => user.id === id);
-    }
+  async deleteArtist(id: string): Promise<void> {
+    await prisma.artist.delete({
+      where: { id }
+    }).catch(() => ErrorNoFound('artists'));
+    await prisma.album.updateMany(
+      {
+        where: { artistId: id },
+        data: { artistId: null }
+      }
+    )
+    await prisma.track.updateMany(
+      {
+        where: { artistId: id },
+        data: { artistId: null }
+      }
+    )
+  }
 
-    async createArtist(createArtistDto: CreateArtistDto) {
-        const newArtist: Artist = {
-            ...createArtistDto,
-            id: uuidv4(),
-        }
-        tempDB.artists.push(newArtist);
-        return newArtist;
-    }
+  async updateArtist(
+    id: string,
+    updateArtistDto: UpdateArtistDto,
+  ): Promise<Artist> {
+    const updateArtist = await prisma.artist.update({
+      where: { id },
+      data: updateArtistDto
+    }).catch(() => ErrorNoFound('artists'));
 
-    async deleteArtist(id: string) {
-        this.checkId(id);
-        const indexArtist = tempDB.artists.findIndex((artist) => artist.id === id);
-        tempDB.artists.splice(indexArtist, 1);
-        tempDB.album.map((album) => album.artistId === id ? album.artistId = null : '');
-        tempDB.track.map((track) => track.artistId === id ? track.artistId = null : '');
-    }
-
-    async updateArtist(id: string, updateArtistDto: UpdateArtistDto) {
-        this.checkId(id);
-        const artist = tempDB.artists.find(user => user.id === id);
-        artist.grammy = updateArtistDto.grammy;
-        artist.name = updateArtistDto.name;
-        return artist;
-    }
-
-    private checkId(id: string): void {
-        let isUser = true;
-        tempDB.artists.map((user) => user.id === id ? isUser = false : '');
-        if (isUser) throw new HttpException('Artist id does not exist', HttpStatus.NOT_FOUND);
-    }
+    return updateArtist;
+  }
 }
