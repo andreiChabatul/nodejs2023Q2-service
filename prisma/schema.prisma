@@ -44,3 +44,8 @@ model Track {
   duration Int
   favorites Boolean @default(false)
 }
+
+model UserData {
+  login String @unique
+  password String
+}

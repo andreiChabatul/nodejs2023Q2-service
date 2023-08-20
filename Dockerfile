@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install
+COPY prisma ./prisma
 
-RUN npx prisma migrate
+RUN npm install
 
 RUN npx prisma generate
 

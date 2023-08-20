@@ -7,23 +7,11 @@ services:
     environment:
       - POSTGRES_USER=sammy
       - POSTGRES_PASSWORD=your_password
+      - POSTGRES_DB=dp1
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
       - '5434:5432'
-    networks:
-      - somenetwork
-
-  server:
-    build: .
-    restart: always
-    depends_on:
-      - postgres
-    container_name: server-container
-    expose:
-      - '4000'
-    ports:
-      - '4000:4000'
     networks:
       - somenetwork
 
