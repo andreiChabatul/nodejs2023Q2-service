@@ -46,6 +46,12 @@ model Track {
 }
 
 model UserData {
+  id String @id @default(uuid())
   login String @unique
   password String
+}
+
+model TokenBase {
+    refreshToken: String;
+    id: String;
 }
