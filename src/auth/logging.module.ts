@@ -4,9 +4,11 @@ import { LoggingService } from './Logging.service';
 import { TokenService } from './token.service';
 
 
+
 @Module({
   imports: [],
   controllers: [LoggingController],
   providers: [LoggingService, TokenService],
+  exports: [TokenService]
 })
 export class LoggingModule {}

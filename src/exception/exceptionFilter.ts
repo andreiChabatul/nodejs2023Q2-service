@@ -1,4 +1,5 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, HttpException } from "@nestjs/common";
+
 
 @Injectable()
 export class ExceptionFilter extends Error {
@@ -13,7 +14,7 @@ export class ExceptionFilter extends Error {
     }
 
     static UnauthorizedError() {
-        return new ExceptionFilter(HttpStatus.UNAUTHORIZED, 'Пользователь не авторизован')
+        return new HttpException('Пользователь не авторизован', HttpStatus.UNAUTHORIZED,)
     }
 
 

@@ -8,3 +8,7 @@ export const ErrorNoFound = (type: typeField) => {
 export const ErrorNoFavorities = (type: typeField) => {
   throw new HttpException(`${type} id does not exist`, HttpStatus.UNPROCESSABLE_ENTITY);
 }
+
+export const ErrorLogin = (message: string) => {
+  throw new HttpException(message, HttpStatus.FORBIDDEN);
+}

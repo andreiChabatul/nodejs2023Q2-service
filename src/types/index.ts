@@ -39,3 +39,10 @@ export interface Favorites {
   albums: Album[];
   tracks: Track[];
 }
+
+
+export interface UserLogin {
+  login: string;
+  password: string;
+  id: string;
+}

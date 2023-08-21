@@ -8,6 +8,8 @@ import { TrackModule } from './track/track.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggingModule } from './auth/logging.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -20,6 +22,9 @@ import { LoggingModule } from './auth/logging.module';
     ConfigModule.forRoot({ envFilePath: '.env' })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: AuthGuard,
+  }],
 })
 export class AppModule { }
